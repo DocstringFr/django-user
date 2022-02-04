@@ -9,13 +9,18 @@
 <form method="POST">
     {% csrf_token %}
 
-    {{ form.as_p }}
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username">
+    <label for="password1">Mot de passe</label>
+    <input type="password" id="password1" name="password1">
+    <label for="password2">Confirmation</label>
+    <input type="password" id="password2" name="password2">
 
-    {% for message in errors.values %}
-        <h3 style="color: red;">
-            {{ message }}
-        </h3>
-    {% endfor %}
+    {% if error %}
+        <small style="color: red;">
+            {{ error }}
+        </small>
+    {% endif %}
 
     <input type="submit" value="S'inscrire">
 </form>
