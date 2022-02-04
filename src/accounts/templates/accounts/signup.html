@@ -10,13 +10,6 @@
     {% csrf_token %}
 
     {{ form.as_p }}
-
-    {% for message in errors.values %}
-        <h3 style="color: red;">
-            {{ message }}
-        </h3>
-    {% endfor %}
-
     <input type="submit" value="S'inscrire">
 </form>
 

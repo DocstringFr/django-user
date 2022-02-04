@@ -1,29 +1,46 @@
+from django.contrib.auth import authenticate
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import login as log_user
+from django.contrib.auth import logout as logout_user
 
-from accounts.models import CustomUser
-
-from django.contrib.auth.forms import UserCreationForm
+from accounts.forms import UserRegistrationForm
 
 
-class CustomSignupForm(UserCreationForm):
-    class Meta:
-        model = CustomUser
-        fields = UserCreationForm.Meta.fields
+def home(request):
+    return HttpResponse(f"Bienvenue {request.user} !")
 
 
 def signup(request):
-    context = {}
-
     if request.method == "POST":
-        form = CustomSignupForm(request.POST)
+        form = UserRegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponse("Bienvenue !")
+            return redirect("home")
+    else:
+        form = UserRegistrationForm()
+
+    return render(request, "accounts/signup.html", {"form": form})
+
+
+def profile(request):
+    return HttpResponse(f"Bienvenue {request.user.email}")
+
+
+def login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            log_user(request, user)
+            return redirect("home")
         else:
-            context["errors"] = form.errors
+            return HttpResponse("Impossible de connecter l'utilisateur...")
 
-    form = CustomSignupForm()
-    context["form"] = form
+    return render(request, 'registration/login.html', {})
 
-    return render(request, "accounts/signup.html", context=context)
+
+def logout(request):
+    logout_user(request)
+    return redirect("home")
